@@ -1,13 +1,9 @@
----
-title: "Reproducible Research: Peer Assessment 1"
-output: 
-  html_document:
-    keep_md: true
----
+# Reproducible Research: Peer Assessment 1
 
 
 ## Loading and preprocessing the data
-```{r}
+
+```r
 library(ggplot2)
 library(scales)
 if(!file.exists("activity.zip")){
@@ -22,7 +18,8 @@ activity <- read.csv(txt)
 
 ## What is mean total number of steps taken per day?
 
-```{r,fig.height=4,fig.width=10}
+
+```r
 steps_by_date<-aggregate(steps~date,activity,sum)
 
 steps_by_date$date = as.Date(steps_by_date$date)
@@ -35,15 +32,32 @@ x<-ggplot(steps_by_date, aes(date,steps))+
   ggtitle("Total number of steps taken each day")+
   ylab("Number of steps")
 print(x)
+```
+
+![](PA1_template_files/figure-html/unnamed-chunk-2-1.png)<!-- -->
+
+```r
 mean(steps_by_date$steps)
+```
+
+```
+## [1] 10766.19
+```
+
+```r
 median(steps_by_date$steps)
 ```
 
-The mean of steps is **`r format(mean(steps_by_date$steps),digits=7)`** and the median is **`r median(steps_by_date$steps)`**.
+```
+## [1] 10765
+```
+
+The mean of steps is **10766.19** and the median is **10765**.
 
 
 ## What is the average daily activity pattern?
-```{r,fig.height=4,fig.width=10}
+
+```r
 intervals_by_steps<-aggregate(steps~interval,activity,mean)
 
 ggplot(intervals_by_steps, aes(interval,steps))+
@@ -52,17 +66,24 @@ ggplot(intervals_by_steps, aes(interval,steps))+
    ggtitle("Average number of steps for each 5 minute interval")+
    ylab("Average number of steps")+
    xlab("5-minute intervals")
-
 ```
+
+![](PA1_template_files/figure-html/unnamed-chunk-3-1.png)<!-- -->
 
 The 5-minute interval that, on average, contains the maximum number of steps
 
-```{r}
+
+```r
 max(intervals_by_steps$steps)
 ```
 
+```
+## [1] 206.1698
+```
+
 ## Imputing missing values
-```{r,fig.height=4,fig.width=10}
+
+```r
 impute_activity<-merge(activity,intervals_by_steps,by.x="interval",by.y="interval")
 names(impute_activity)[names(impute_activity)=="steps.x"] <- "steps"
 names(impute_activity)[names(impute_activity)=="steps.y"] <- "avg"
@@ -79,15 +100,31 @@ x<-ggplot(impute_steps_by_date, aes(date,steps))+
   ggtitle("Total number of steps taken each day (imputing missing data case)")+
   ylab("Number of steps")
 print(x)
-mean(impute_steps_by_date$steps)
-median(impute_steps_by_date$steps)
+```
 
+![](PA1_template_files/figure-html/unnamed-chunk-5-1.png)<!-- -->
+
+```r
+mean(impute_steps_by_date$steps)
+```
+
+```
+## [1] 10766.19
+```
+
+```r
+median(impute_steps_by_date$steps)
+```
+
+```
+## [1] 10766.19
 ```
 
 
 ## Are there differences in activity patterns between weekdays and weekends?
 
-```{r,fig.height=8,fig.width=10}
+
+```r
 wd <- c("weekend","weekday","weekday","weekday","weekday","weekday","weekend")
 impute_activity$week <- wd[as.POSIXlt(impute_activity$date)$wday+1]
 intervals_by_steps<-aggregate(steps~interval+week,impute_activity,mean)
@@ -101,4 +138,6 @@ x<-ggplot(intervals_by_steps, aes(interval,steps))+
 
 print(x)
 ```
+
+![](PA1_template_files/figure-html/unnamed-chunk-6-1.png)<!-- -->
 
